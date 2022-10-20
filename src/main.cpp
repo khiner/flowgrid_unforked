@@ -4,15 +4,13 @@
 // Read online: https://github.com/ocornut/imgui/tree/master/docs
 
 #include "imgui.h"
+#include "imgui_internal.h"
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_opengl3.h"
-#include <stdio.h>
+#include "implot.h"
+
 #include <SDL.h>
-#if defined(IMGUI_IMPL_OPENGL_ES2)
-#include <SDL_opengles2.h>
-#else
 #include <SDL_opengl.h>
-#endif
 
 // Main code
 int main(int, char**)
@@ -70,6 +68,7 @@ int main(int, char**)
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
     //io.ConfigViewportsNoAutoMerge = true;
     //io.ConfigViewportsNoTaskBarIcon = true;
+    io.IniFilename = nullptr; // Disable ImGui's .ini file saving.
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -104,7 +103,8 @@ int main(int, char**)
     //IM_ASSERT(font != NULL);
 
     // Our state
-    bool show_demo_window = true;
+    bool show_imgui_demo_window = true;
+    bool show_implot_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -132,19 +132,36 @@ int main(int, char**)
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        static const char *MainWindowName = "Hello, world!";
+        static const char *ImGuiDemoWindowName = "Dear ImGui Demo";
+        static const char *ImPlotDemoWindowName = "ImPlot Demo";
+        static const char *AnotherWindowName = "Another Window";
+        auto dockspace_id = ImGui::DockSpaceOverViewport(nullptr, ImGuiDockNodeFlags_PassthruCentralNode);
+        if (ImGui::GetFrameCount() == 1) {
+            auto imgui_demo_node_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Right, 0.5f, nullptr, &dockspace_id);
+            auto implot_demo_node_id = ImGui::DockBuilderSplitNode(imgui_demo_node_id, ImGuiDir_Down, 0.4f, nullptr, &imgui_demo_node_id);
+            auto another_node_id = ImGui::DockBuilderSplitNode(dockspace_id, ImGuiDir_Down, 0.4f, nullptr, &dockspace_id);
+            ImGui::DockBuilderDockWindow(ImGuiDemoWindowName, imgui_demo_node_id);
+            ImGui::DockBuilderDockWindow(ImPlotDemoWindowName, implot_demo_node_id);
+            ImGui::DockBuilderDockWindow(MainWindowName, dockspace_id);
+            ImGui::DockBuilderDockWindow(AnotherWindowName, another_node_id);
+        }
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+        if (show_imgui_demo_window)
+            ImGui::ShowDemoWindow(&show_imgui_demo_window);
+        if (show_implot_demo_window)
+            ImPlot::ShowDemoWindow(&show_implot_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to create a named window.
         {
             static float f = 0.0f;
             static int counter = 0;
 
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+            ImGui::Begin(MainWindowName);                          // Create main window and append into it.
 
             ImGui::Text("This is some useful text.");               // Display some text (you can use a format strings too)
-            ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Checkbox("ImGui Demo Window", &show_imgui_demo_window);      // Edit bools storing our window open/close state
+            ImGui::Checkbox("ImPlot Demo Window", &show_implot_demo_window);
             ImGui::Checkbox("Another Window", &show_another_window);
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
@@ -162,7 +179,7 @@ int main(int, char**)
         // 3. Show another simple window.
         if (show_another_window)
         {
-            ImGui::Begin("Another Window", &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
+            ImGui::Begin(AnotherWindowName, &show_another_window);   // Pass a pointer to our bool variable (the window will have a closing button that will clear the bool when clicked)
             ImGui::Text("Hello from another window!");
             if (ImGui::Button("Close Me"))
                 show_another_window = false;
