@@ -42,4 +42,6 @@ find_package(Freetype REQUIRED)
 
 set(BUILD_TESTS OFF CACHE STRING "Make the tests" FORCE)
 set(BUILD_DEMOS OFF CACHE STRING "Make the demo app" FORCE)
+set(BUILD_EXTENSIONS OFF CACHE STRING "Make the extension library (required for demo)" FORCE)
+
 add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/zep)

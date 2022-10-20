@@ -7,6 +7,7 @@ add_subdirectory("lib")
 
 file(
     GLOB_RECURSE SOURCES CONFIGURE_DEPENDS src/*.cpp
+    lib/ImGuiFileDialog/ImGuiFileDialog.cpp
     lib/implot/implot.cpp lib/implot/implot_items.cpp lib/implot/implot_demo.cpp
 )
 
@@ -14,7 +15,9 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 
 include_directories(
     lib/zep/include
+#    lib/zep/extensions
     lib/implot
+    lib/ImGuiFileDialog
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE IMGUI Zep::Zep)

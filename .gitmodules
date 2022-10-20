@@ -4,10 +4,15 @@
 	branch = docking
 [submodule "lib/zep"]
 	path = lib/zep
-	url = git@github.com:Rezonality/zep.git
+	url = git@github.com:khiner/zep.git
+	branch = fix-imgui-key-casting
 [submodule "lib/implot"]
 	path = lib/implot
 	url = git@github.com:epezent/implot.git
 [submodule "lib/SDL"]
 	path = lib/SDL
 	url = git@github.com:libsdl-org/SDL.git
+[submodule "lib/ImGuiFileDialog"]
+	path = lib/ImGuiFileDialog
+	url = git@github.com:aiekick/ImGuiFileDialog.git
+	branch = Lib_Only
